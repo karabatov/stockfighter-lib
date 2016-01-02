@@ -1,6 +1,6 @@
 import Foundation
 
-class Heartbeat {
+public class Heartbeat {
     /// Check that Stockfighter API is up.
     class func isAPIup(handler: ((Bool) -> Void)?) {
         guard let heartbeatURL = NSURL(string: "https://api.stockfighter.io/ob/api/heartbeat") else { 
