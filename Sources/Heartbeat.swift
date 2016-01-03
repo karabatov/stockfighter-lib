@@ -1,20 +1,43 @@
 import Foundation
 
-public class Heartbeat {
-    /// Check that Stockfighter API is up.
-    public class func isAPIup(handler: ((Bool) -> Void)?) {
-        guard let heartbeatURL = NSURL(string: "https://api.stockfighter.io/ob/api/heartbeat") else {
-            handler?(false)
+let stockfighterBaseAPIURL = NSURL(string: "https://api.stockfighter.io/ob/api/")!
+
+typealias ErrorMessage = String
+typealias JSON = [String: AnyObject]
+
+public struct Heartbeat {
+    let ok: Bool
+    let error: ErrorMessage
+
+    init(ok: Bool = false, error: ErrorMessage = "") {
+        self.ok = ok
+        self.error = error
+    }
+
+    init?(data: NSData) {
+        if let jsonData = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON {
+            ok = (jsonData["ok"] as? Bool) ?? false
+            error = (jsonData["error"] as? ErrorMessage) ?? ""
+        } else {
+            return nil
+        }
+    }
+}
+
+/// Check that Stockfighter API is up.
+public func isStockfighterAPIup(handler: ((Heartbeat) -> Void)?) {
+    let heartbeatURL = stockfighterBaseAPIURL.URLByAppendingPathComponent("heartbeat")
+
+    NSURLSession.sharedSession().dataTaskWithURL(heartbeatURL) { data, response, error in
+        guard let
+            rawData = data,
+            heartbeat = Heartbeat(data: rawData)
+            where error == nil
+        else {
+            handler?(Heartbeat())
             return
         }
 
-        NSURLSession.sharedSession().dataTaskWithURL(heartbeatURL) { data, response, error in
-            guard error == nil else {
-                handler?(false)
-                return
-            }
-
-            handler?(true)
-        }.resume()
-    }
+        handler?(heartbeat)
+    }.resume()
 }
