@@ -2,12 +2,12 @@ import Foundation
 
 let stockfighterBaseAPIURL = NSURL(string: "https://api.stockfighter.io/ob/api/")!
 
-typealias ErrorMessage = String
-typealias JSON = [String: AnyObject]
+public typealias ErrorMessage = String
+internal typealias JSON = [String: AnyObject]
 
 public struct Heartbeat {
-    let ok: Bool
-    let error: ErrorMessage
+    public let ok: Bool
+    public let error: ErrorMessage
 
     init(ok: Bool = false, error: ErrorMessage = "") {
         self.ok = ok
