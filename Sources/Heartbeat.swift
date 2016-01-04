@@ -15,9 +15,13 @@ public struct Heartbeat {
     }
 
     init?(data: NSData) {
-        if let jsonData = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON {
-            ok = (jsonData["ok"] as? Bool) ?? false
-            error = (jsonData["error"] as? ErrorMessage) ?? ""
+        if let
+            jsonData = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON,
+            ok = jsonData["ok"] as? Bool,
+            error = jsonData["error"] as? ErrorMessage
+        {
+            self.ok = ok
+            self.error = error
         } else {
             return nil
         }
@@ -31,8 +35,9 @@ public func isStockfighterAPIup(handler: ((Heartbeat) -> Void)?) {
     NSURLSession.sharedSession().dataTaskWithURL(heartbeatURL) { data, response, error in
         guard let
             rawData = data,
-            heartbeat = Heartbeat(data: rawData)
-            where error == nil
+            heartbeat = Heartbeat(data: rawData),
+            httpResponse = response as? NSHTTPURLResponse
+            where httpResponse.statusCode == 200 && error == nil
         else {
             handler?(Heartbeat())
             return
