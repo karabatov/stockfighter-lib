@@ -11,7 +11,7 @@ public class SFAPI {
 
     // MARK: Init
 
-    init(baseAPI: String, APIKey: String) {
+    public init(baseAPI: String, APIKey: String) {
         if let apiURL = NSURL(string: baseAPI) {
             self.apiURL = apiURL
         } else {
