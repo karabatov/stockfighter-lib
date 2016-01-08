@@ -65,6 +65,22 @@ public class SFAPI {
         }.resume()
     }
 
+    /// Stop a running level.
+    public func stopLevelInstance(instance: InstanceId, handler: ((Bool) -> Void)?) {
+        let request = requestWithMethod(.POST, URL: SFAPI.GMStopLevelInstance(gmURL, instance: instance))
+        URLSession.dataTaskWithRequest(request) { _, response, error in
+            guard let
+                httpResponse = response as? NSHTTPURLResponse
+                where httpResponse.statusCode == 200 && error == nil
+            else {
+                handler?(false)
+                return
+            }
+
+            handler?(true)
+        }.resume()
+    }
+
     /// Get a running level snapshot.
     public func getStateForLevelInstance(instance: InstanceId, handler: ((InstanceStatus) -> Void)?) {
         let request = requestWithMethod(.GET, URL: SFAPI.GMInstanceStatus(gmURL, instance: instance))
@@ -109,6 +125,14 @@ extension SFAPI {
         return baseURL
             .URLByAppendingPathComponent("levels")
             .URLByAppendingPathComponent(level.description)
+    }
+
+    /// Stopping a level.
+    class func GMStopLevelInstance(baseURL: NSURL, instance: InstanceId) -> NSURL {
+        return baseURL
+            .URLByAppendingPathComponent("instances")
+            .URLByAppendingPathComponent(String(instance))
+            .URLByAppendingPathComponent("stop")
     }
 
     /// Getting a running level status.
