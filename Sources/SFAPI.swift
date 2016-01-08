@@ -64,7 +64,20 @@ public class SFAPI {
     }
 
     /// Get a running level snapshot.
-    public func getStateForLevelInstance(instance: InstanceId, handler: ((LevelState) -> Void)?) {
+    public func getStateForLevelInstance(instance: InstanceId, handler: ((InstanceStatus) -> Void)?) {
+        URLSession.dataTaskWithURL(SFAPI.GMInstanceStatus(gmURL, instance: instance)) { data, response, error in
+            guard let
+                rawData = data,
+                instanceStatus = InstanceStatus(data: rawData),
+                httpResponse = response as? NSHTTPURLResponse
+                where httpResponse.statusCode == 200 && error == nil
+            else {
+                debugPrint("Got a bad response when requesting status for instance “\(instance)”")
+                return
+            }
+
+            handler?(instanceStatus)
+        }.resume()
     }
 }
 
@@ -80,5 +93,12 @@ extension SFAPI {
         return baseURL
             .URLByAppendingPathComponent("levels")
             .URLByAppendingPathComponent(level.description)
+    }
+
+    /// Getting a running level status.
+    class func GMInstanceStatus(baseURL: NSURL, instance: InstanceId) -> NSURL {
+        return baseURL
+            .URLByAppendingPathComponent("instances")
+            .URLByAppendingPathComponent(String(instance))
     }
 }

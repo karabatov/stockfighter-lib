@@ -75,7 +75,7 @@ public struct Level {
 }
 
 /// Describes the current status of a level which we get through the GM API.
-public struct LevelStatus {
+public struct InstanceStatus {
     let totalDays: Int
     let tradingDay: Int
     let done: Bool
