@@ -30,7 +30,8 @@ public class SFAPI {
 
     /// Check that Stockfighter API is up.
     public func isAPIUp(handler: ((Heartbeat) -> Void)?) {
-        URLSession.dataTaskWithURL(SFAPI.APIHeartbeat(apiURL)) { data, response, error in
+        let request = requestWithMethod(.GET, URL: SFAPI.APIHeartbeat(apiURL))
+        URLSession.dataTaskWithRequest(request) { data, response, error in
             guard let
                 rawData = data,
                 heartbeat = Heartbeat(data: rawData),
@@ -49,14 +50,15 @@ public class SFAPI {
 
     /// Start a level.
     public func startLevel(level: StockfighterLevel, handler: ((Level) -> Void)?) {
-        URLSession.dataTaskWithURL(SFAPI.GMStartLevel(gmURL, level: level)) { data, response, error in
+        let request = requestWithMethod(.POST, URL: SFAPI.GMStartLevel(gmURL, level: level))
+        URLSession.dataTaskWithRequest(request) { data, response, error in
             guard let
                 rawData = data,
                 newLevel = Level(data: rawData),
                 httpResponse = response as? NSHTTPURLResponse
                 where httpResponse.statusCode == 200 && error == nil
             else {
-                fatalError("Got a bad response when creating level “\(level.description)”")
+                fatalError("Got a bad response when creating level “\(level.description)”.")
             }
 
             handler?(newLevel)
@@ -65,19 +67,33 @@ public class SFAPI {
 
     /// Get a running level snapshot.
     public func getStateForLevelInstance(instance: InstanceId, handler: ((InstanceStatus) -> Void)?) {
-        URLSession.dataTaskWithURL(SFAPI.GMInstanceStatus(gmURL, instance: instance)) { data, response, error in
+        let request = requestWithMethod(.GET, URL: SFAPI.GMInstanceStatus(gmURL, instance: instance))
+        URLSession.dataTaskWithRequest(request) { data, response, error in
             guard let
                 rawData = data,
                 instanceStatus = InstanceStatus(data: rawData),
                 httpResponse = response as? NSHTTPURLResponse
                 where httpResponse.statusCode == 200 && error == nil
             else {
-                debugPrint("Got a bad response when requesting status for instance “\(instance)”")
+                debugPrint("Got a bad response when requesting status for instance “\(instance)”.")
                 return
             }
 
             handler?(instanceStatus)
         }.resume()
+    }
+
+    // MARK: HTTP task generation
+
+    private enum HTTPMethod: String {
+        case GET = "GET"
+        case POST = "POST"
+    }
+
+    private func requestWithMethod(method: HTTPMethod, URL: NSURL) -> NSURLRequest {
+        let request = NSMutableURLRequest(URL: URL)
+        request.HTTPMethod = method.rawValue
+        return request
     }
 }
 
