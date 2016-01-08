@@ -44,6 +44,12 @@ public class SFAPI {
             handler?(heartbeat)
         }.resume()
     }
+
+    // MARK: GM API
+
+    /// Start a level.
+    public func startLevel(level: StockfighterLevel, handler: ((Level) -> Void)?) {
+    }
 }
 
 // MARK: URL generation
