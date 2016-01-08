@@ -42,13 +42,13 @@ public enum LevelState: String {
 
 /// Contains properties for a game level which we need to be able to play it: instructions, trading account, etc.
 public struct Level {
-    let account: Account
-    let instance: InstanceId
-    let instructions: Instructions
-    let secondsPerDay: Int
-    let tickers: [StockSymbol]
-    let venues: [VenueSymbol]
-    let balances: CurrencyBalance
+    public let account: Account
+    public let instance: InstanceId
+    public let instructions: Instructions
+    public let secondsPerDay: Int
+    public let tickers: [StockSymbol]
+    public let venues: [VenueSymbol]
+    public let balances: CurrencyBalance
 
     init?(data: NSData) {
         guard let
@@ -76,12 +76,12 @@ public struct Level {
 
 /// Describes the current status of a level which we get through the GM API.
 public struct InstanceStatus {
-    let totalDays: Int
-    let tradingDay: Int
-    let done: Bool
-    let instance: InstanceId
-    let state: LevelState
-    let date: NSDate
+    public let totalDays: Int
+    public let tradingDay: Int
+    public let done: Bool
+    public let instance: InstanceId
+    public let state: LevelState
+    public let date: NSDate
 
     init?(data: NSData) {
         guard let
