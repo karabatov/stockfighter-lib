@@ -7,15 +7,17 @@ internal typealias JSON = [String: AnyObject]
 public class SFAPI {
 
     private let apiURL: NSURL
+    private let gmURL: NSURL
     private let URLSession: NSURLSession
 
     // MARK: Init
 
     public init(baseAPI: String, APIKey: String) {
-        if let apiURL = NSURL(string: baseAPI) {
-            self.apiURL = apiURL
+        if let baseURL = NSURL(string: baseAPI) {
+            self.apiURL = baseURL.URLByAppendingPathComponent("ob/api")
+            self.gmURL = baseURL.URLByAppendingPathComponent("gm")
         } else {
-            fatalError("Could not initialize API URL with address: \(baseAPI)")
+            fatalError("Could not initialize API URLs with address: \(baseAPI)")
         }
 
         let sessionConf = NSURLSessionConfiguration.defaultSessionConfiguration()
