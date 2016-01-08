@@ -50,6 +50,10 @@ public class SFAPI {
     /// Start a level.
     public func startLevel(level: StockfighterLevel, handler: ((Level) -> Void)?) {
     }
+
+    /// Get a running level snapshot.
+    public func getStateForLevelInstance(instance: InstanceId, handler: ((LevelState) -> Void)?) {
+    }
 }
 
 // MARK: URL generation
