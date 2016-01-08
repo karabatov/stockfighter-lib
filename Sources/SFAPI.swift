@@ -49,6 +49,18 @@ public class SFAPI {
 
     /// Start a level.
     public func startLevel(level: StockfighterLevel, handler: ((Level) -> Void)?) {
+        URLSession.dataTaskWithURL(SFAPI.GMStartLevel(gmURL, level: level)) { data, response, error in
+            guard let
+                rawData = data,
+                newLevel = Level(data: rawData),
+                httpResponse = response as? NSHTTPURLResponse
+                where httpResponse.statusCode == 200 && error == nil
+            else {
+                fatalError("Got a bad response when creating level “\(level.description)”")
+            }
+
+            handler?(newLevel)
+        }.resume()
     }
 
     /// Get a running level snapshot.
