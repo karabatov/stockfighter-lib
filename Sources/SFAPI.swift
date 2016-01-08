@@ -62,4 +62,11 @@ extension SFAPI {
     class func APIHeartbeat(baseURL: NSURL) -> NSURL {
         return baseURL.URLByAppendingPathComponent("heartbeat")
     }
+
+    /// Starting a level.
+    class func GMStartLevel(baseURL: NSURL, level: StockfighterLevel) -> NSURL {
+        return baseURL
+            .URLByAppendingPathComponent("levels")
+            .URLByAppendingPathComponent(level.description)
+    }
 }
