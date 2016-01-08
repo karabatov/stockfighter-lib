@@ -32,6 +32,9 @@ public typealias CurrencySymbol = String
 /// Currency amount.
 public typealias CurrencyAmount = Int
 
+/// Balance for a given currency, e.g. USD: 0.
+public typealias CurrencyBalance = [CurrencySymbol: CurrencyAmount]
+
 /// State of the level, "open" etc.
 public enum LevelState: String {
     case Open = "open"
@@ -45,7 +48,30 @@ public struct Level {
     let secondsPerDay: Int
     let tickers: [StockSymbol]
     let venues: [VenueSymbol]
-    let balances: [CurrencySymbol: CurrencyAmount]
+    let balances: CurrencyBalance
+
+    init?(data: NSData) {
+        guard let
+            json = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON,
+            ok = json["ok"] as? Bool,
+            account = json["account"] as? Account,
+            instance = json["instanceId"] as? InstanceId,
+            instructions = json["instructions"] as? Instructions,
+            secondsPerDay = json["secondsPerTradingDay"] as? Int,
+            tickers = json["tickers"] as? [StockSymbol],
+            venues = json["venues"] as? [VenueSymbol],
+            balances = json["balances"] as? CurrencyBalance
+            where ok == true
+        else { return nil }
+
+        self.account = account
+        self.instance = instance
+        self.instructions = instructions
+        self.secondsPerDay = secondsPerDay
+        self.tickers = tickers
+        self.venues = venues
+        self.balances = balances
+    }
 }
 
 /// Describes the current status of a level which we get through the GM API.
@@ -56,4 +82,26 @@ public struct LevelStatus {
     let instance: InstanceId
     let state: LevelState
     let date: NSDate
+
+    init?(data: NSData) {
+        guard let
+            json = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON,
+            ok = json["ok"] as? Bool,
+            details = json["details"] as? JSON,
+            totalDays = details["endOfTheWorldDay"] as? Int,
+            tradingDay = details["tradingDay"] as? Int,
+            done = json["done"] as? Bool,
+            instance = json["id"] as? InstanceId,
+            stateValue = json["state"] as? String,
+            state = LevelState(rawValue: stateValue)
+            where ok == true
+        else { return nil }
+
+        self.totalDays = totalDays
+        self.tradingDay = tradingDay
+        self.done = done
+        self.instance = instance
+        self.state = state
+        self.date = NSDate()
+    }
 }
