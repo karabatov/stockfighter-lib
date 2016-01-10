@@ -117,14 +117,14 @@ public class SFAPI {
 extension SFAPI {
     /// API Heartbeat: https://starfighter.readme.io/docs/heartbeat
     class func APIHeartbeat(baseURL: NSURL) -> NSURL {
-        return baseURL.URLByAppendingPathComponent("heartbeat")
+        return baseURL.URLByAppendingPathComponent("heartbeat", isDirectory: false)
     }
 
     /// Starting a level.
     class func GMStartLevel(baseURL: NSURL, level: StockfighterLevel) -> NSURL {
         return baseURL
             .URLByAppendingPathComponent("levels")
-            .URLByAppendingPathComponent(level.description)
+            .URLByAppendingPathComponent(level.description, isDirectory: false)
     }
 
     /// Stopping a level.
@@ -132,13 +132,13 @@ extension SFAPI {
         return baseURL
             .URLByAppendingPathComponent("instances")
             .URLByAppendingPathComponent(String(instance))
-            .URLByAppendingPathComponent("stop")
+            .URLByAppendingPathComponent("stop", isDirectory: false)
     }
 
     /// Getting a running level status.
     class func GMInstanceStatus(baseURL: NSURL, instance: InstanceId) -> NSURL {
         return baseURL
             .URLByAppendingPathComponent("instances")
-            .URLByAppendingPathComponent(String(instance))
+            .URLByAppendingPathComponent(String(instance), isDirectory: false)
     }
 }
