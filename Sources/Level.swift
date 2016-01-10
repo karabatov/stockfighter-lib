@@ -51,9 +51,10 @@ public struct Level {
     public let venues: [VenueSymbol]
     public let balances: CurrencyBalance
 
-    init?(data: NSData) {
+    init?(data: NSData?) {
         guard let
-            json = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON,
+            rawData = data,
+            json = try! NSJSONSerialization.JSONObjectWithData(rawData, options: .AllowFragments) as? JSON,
             ok = json["ok"] as? Bool,
             account = json["account"] as? Account,
             instance = json["instanceId"] as? InstanceId,
@@ -84,9 +85,10 @@ public struct InstanceStatus {
     public let state: LevelState
     public let date: NSDate
 
-    init?(data: NSData) {
+    init?(data: NSData?) {
         guard let
-            json = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON,
+            rawData = data,
+            json = try! NSJSONSerialization.JSONObjectWithData(rawData, options: .AllowFragments) as? JSON,
             ok = json["ok"] as? Bool,
             details = json["details"] as? JSON,
             totalDays = details["endOfTheWorldDay"] as? Int,

@@ -9,9 +9,10 @@ public struct Heartbeat {
         self.error = error
     }
 
-    init?(data: NSData) {
+    init?(data: NSData?) {
         if let
-            jsonData = try! NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as? JSON,
+            rawData = data,
+            jsonData = try! NSJSONSerialization.JSONObjectWithData(rawData, options: .AllowFragments) as? JSON,
             ok = jsonData["ok"] as? Bool
         {
             self.ok = ok

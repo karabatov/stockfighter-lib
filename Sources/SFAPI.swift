@@ -26,23 +26,39 @@ public class SFAPI {
         URLSession = NSURLSession(configuration: sessionConf)
     }
 
+    // MARK: URL response check
+
+    private func checkAPIResponseWithFailMessage(message: String, data: NSData?, response: NSURLResponse?, error: NSError?) -> Heartbeat? {
+        if let error = error {
+            fatalError("\(message): \(error.description)")
+        }
+
+        guard let
+            heartbeat = Heartbeat(data: data),
+            httpResponse = response as? NSHTTPURLResponse
+            where httpResponse.statusCode == 200
+        else {
+            fatalError(message)
+        }
+
+        if !heartbeat.ok {
+            fatalError("\(message): \(heartbeat.error)")
+        }
+
+        return heartbeat
+    }
+
     // MARK: Heartbeat
 
     /// Check that Stockfighter API is up.
     public func isAPIUp(handler: ((Heartbeat) -> Void)?) {
         let request = requestWithMethod(.GET, URL: SFAPI.APIHeartbeat(apiURL))
         URLSession.dataTaskWithRequest(request) { data, response, error in
-            guard let
-                rawData = data,
-                heartbeat = Heartbeat(data: rawData),
-                httpResponse = response as? NSHTTPURLResponse
-                where httpResponse.statusCode == 200 && error == nil
-            else {
+            if let heartbeat = self.checkAPIResponseWithFailMessage("Bad response on API heartbeat check.", data: data, response: response, error: error) {
+                handler?(heartbeat)
+            } else {
                 handler?(Heartbeat.dead())
-                return
             }
-
-            handler?(heartbeat)
         }.resume()
     }
 
@@ -52,13 +68,12 @@ public class SFAPI {
     public func startLevel(level: StockfighterLevel, handler: ((Level) -> Void)?) {
         let request = requestWithMethod(.POST, URL: SFAPI.GMStartLevel(gmURL, level: level))
         URLSession.dataTaskWithRequest(request) { data, response, error in
+            let message = "Got a bad response when creating level “\(level.description)”"
             guard let
-                rawData = data,
-                newLevel = Level(data: rawData),
-                httpResponse = response as? NSHTTPURLResponse
-                where httpResponse.statusCode == 200 && error == nil
+                _ = self.checkAPIResponseWithFailMessage(message, data: data, response: response, error: error),
+                newLevel = Level(data: data)
             else {
-                fatalError("Got a bad response when creating level “\(level.description)”.")
+                fatalError(message)
             }
 
             handler?(newLevel)
@@ -68,16 +83,14 @@ public class SFAPI {
     /// Stop a running level.
     public func stopLevelInstance(instance: InstanceId, handler: ((Bool) -> Void)?) {
         let request = requestWithMethod(.POST, URL: SFAPI.GMStopLevelInstance(gmURL, instance: instance))
-        URLSession.dataTaskWithRequest(request) { _, response, error in
-            guard let
-                httpResponse = response as? NSHTTPURLResponse
-                where httpResponse.statusCode == 200 && error == nil
-            else {
+        URLSession.dataTaskWithRequest(request) { data, response, error in
+            let message = "Got a bad response when stopping instance “\(instance)”"
+            guard let heartbeat = self.checkAPIResponseWithFailMessage(message, data: data, response: response, error: error) else {
                 handler?(false)
                 return
             }
 
-            handler?(true)
+            handler?(heartbeat.ok)
         }.resume()
     }
 
@@ -85,14 +98,12 @@ public class SFAPI {
     public func getStateForLevelInstance(instance: InstanceId, handler: ((InstanceStatus) -> Void)?) {
         let request = requestWithMethod(.GET, URL: SFAPI.GMInstanceStatus(gmURL, instance: instance))
         URLSession.dataTaskWithRequest(request) { data, response, error in
+            let message = "Got a bad response when requesting status for instance “\(instance)”"
             guard let
-                rawData = data,
-                instanceStatus = InstanceStatus(data: rawData),
-                httpResponse = response as? NSHTTPURLResponse
-                where httpResponse.statusCode == 200 && error == nil
+                _ = self.checkAPIResponseWithFailMessage(message, data: data, response: response, error: error),
+                instanceStatus = InstanceStatus(data: data)
             else {
-                debugPrint("Got a bad response when requesting status for instance “\(instance)”.")
-                return
+                fatalError(message)
             }
 
             handler?(instanceStatus)
