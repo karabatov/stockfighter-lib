@@ -30,7 +30,8 @@ public class SFAPI {
 
     private func checkAPIResponseWithFailMessage(message: String, data: NSData?, response: NSURLResponse?, error: NSError?) -> Heartbeat? {
         if let error = error {
-            fatalError("\(message): \(error.description)")
+            debugPrint("\(message): \(error.description)")
+            return nil
         }
 
         guard let
@@ -38,11 +39,12 @@ public class SFAPI {
             httpResponse = response as? NSHTTPURLResponse
             where httpResponse.statusCode == 200
         else {
-            fatalError(message)
+            debugPrint(message)
+            return nil
         }
 
         if !heartbeat.ok {
-            fatalError("\(message): \(heartbeat.error)")
+            debugPrint("\(message): \(heartbeat.error)")
         }
 
         return heartbeat
@@ -54,7 +56,7 @@ public class SFAPI {
     public func isAPIUp(handler: ((Heartbeat) -> Void)?) {
         let request = requestWithMethod(.GET, URL: SFAPI.APIHeartbeat(apiURL))
         URLSession.dataTaskWithRequest(request) { data, response, error in
-            if let heartbeat = self.checkAPIResponseWithFailMessage("Bad response on API heartbeat check.", data: data, response: response, error: error) {
+            if let heartbeat = self.checkAPIResponseWithFailMessage("Bad response on API heartbeat check", data: data, response: response, error: error) {
                 handler?(heartbeat)
             } else {
                 handler?(Heartbeat.dead())
@@ -73,7 +75,8 @@ public class SFAPI {
                 _ = self.checkAPIResponseWithFailMessage(message, data: data, response: response, error: error),
                 newLevel = Level(data: data)
             else {
-                fatalError(message)
+                debugPrint(message)
+                return
             }
 
             handler?(newLevel)
@@ -103,7 +106,8 @@ public class SFAPI {
                 _ = self.checkAPIResponseWithFailMessage(message, data: data, response: response, error: error),
                 instanceStatus = InstanceStatus(data: data)
             else {
-                fatalError(message)
+                debugPrint(message)
+                return
             }
 
             handler?(instanceStatus)
