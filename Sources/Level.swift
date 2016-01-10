@@ -38,6 +38,7 @@ public typealias CurrencyBalance = [CurrencySymbol: CurrencyAmount]
 /// State of the level, "open" etc.
 public enum LevelState: String {
     case Open = "open"
+    case Closed = "closed"
 }
 
 /// Contains properties for a game level which we need to be able to play it: instructions, trading account, etc.
