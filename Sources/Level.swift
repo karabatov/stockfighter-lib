@@ -86,14 +86,10 @@ public struct InstanceStatus {
     public let date: NSDate
 
     init?(data: NSData?) {
-        debugPrint("start init InstanceStatus…")
         guard let
             rawData = data,
             json = try! NSJSONSerialization.JSONObjectWithData(rawData, options: .AllowFragments) as? JSON,
             ok = json["ok"] as? Bool,
-            details = json["details"] as? JSON,
-            totalDays = details["endOfTheWorldDay"] as? Int,
-            tradingDay = details["tradingDay"] as? Int,
             done = json["done"] as? Bool,
             instance = json["id"] as? InstanceId,
             stateValue = json["state"] as? String,
@@ -101,8 +97,9 @@ public struct InstanceStatus {
             where ok == true
         else { return nil }
 
-        self.totalDays = totalDays
-        self.tradingDay = tradingDay
+        let details = json["details"] as? JSON
+        self.totalDays = details?["endOfTheWorldDay"] as? Int ?? 0
+        self.tradingDay = details?["tradingDay"] as? Int ?? 0
         self.done = done
         self.instance = instance
         self.state = state
