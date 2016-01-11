@@ -75,7 +75,7 @@ public class SFAPI {
                 _ = self.checkAPIResponseWithFailMessage(message, data: data, response: response, error: error),
                 newLevel = Level(data: data)
             else {
-                debugPrint(message)
+                debugPrint("\(message): could not create new Level object.")
                 return
             }
 
