@@ -97,6 +97,7 @@ public struct InstanceStatus {
             where ok == true
         else { return nil }
 
+        // Details may _just_ be missing from the response, so make them optional.
         let details = json["details"] as? [String: Int]
         self.totalDays = details?["endOfTheWorldDay"] ?? 0
         self.tradingDay = details?["tradingDay"] ?? 0
