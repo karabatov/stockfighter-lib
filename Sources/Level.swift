@@ -97,9 +97,9 @@ public struct InstanceStatus {
             where ok == true
         else { return nil }
 
-        let details = json["details"] as? JSON
-        self.totalDays = details?["endOfTheWorldDay"] as? Int ?? 0
-        self.tradingDay = details?["tradingDay"] as? Int ?? 0
+        let details = json["details"] as? [String: Int]
+        self.totalDays = details?["endOfTheWorldDay"] ?? 0
+        self.tradingDay = details?["tradingDay"] ?? 0
         self.done = done
         self.instance = instance
         self.state = state

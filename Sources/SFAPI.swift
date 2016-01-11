@@ -39,7 +39,7 @@ public class SFAPI {
             httpResponse = response as? NSHTTPURLResponse
             where httpResponse.statusCode == 200
         else {
-            debugPrint(message)
+            debugPrint("\(message): got status code != 200")
             return nil
         }
 
