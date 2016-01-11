@@ -35,12 +35,6 @@ public typealias CurrencyAmount = Int
 /// Balance for a given currency, e.g. USD: 0.
 public typealias CurrencyBalance = [CurrencySymbol: CurrencyAmount]
 
-/// State of the level, "open" etc.
-public enum LevelState: String {
-    case Open = "open"
-    case Closed = "closed"
-}
-
 /// Contains properties for a game level which we need to be able to play it: instructions, trading account, etc.
 public struct Level {
     public let account: Account
@@ -82,7 +76,7 @@ public struct InstanceStatus {
     public let tradingDay: Int
     public let done: Bool
     public let instance: InstanceId
-    public let state: LevelState
+    public let state: String
     public let date: NSDate
 
     init?(data: NSData?) {
@@ -95,8 +89,7 @@ public struct InstanceStatus {
             tradingDay = details["tradingDay"] as? Int,
             done = json["done"] as? Bool,
             instance = json["id"] as? InstanceId,
-            stateValue = json["state"] as? String,
-            state = LevelState(rawValue: stateValue)
+            state = json["state"] as? String
             where ok == true
         else { return nil }
 
