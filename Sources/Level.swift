@@ -90,7 +90,7 @@ public struct InstanceStatus {
             rawData = data,
             json = try! NSJSONSerialization.JSONObjectWithData(rawData, options: .AllowFragments) as? JSON,
             ok = json["ok"] as? Bool,
-            details = json["details"] as? JSON,
+            details = json["details"] as? NSDictionary,
             totalDays = details["endOfTheWorldDay"] as? Int,
             tradingDay = details["tradingDay"] as? Int,
             done = json["done"] as? Bool,
