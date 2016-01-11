@@ -86,11 +86,12 @@ public struct InstanceStatus {
     public let date: NSDate
 
     init?(data: NSData?) {
+        debugPrint("start init InstanceStatus…")
         guard let
             rawData = data,
             json = try! NSJSONSerialization.JSONObjectWithData(rawData, options: .AllowFragments) as? JSON,
             ok = json["ok"] as? Bool,
-            details = json["details"] as? NSDictionary,
+            details = json["details"] as? JSON,
             totalDays = details["endOfTheWorldDay"] as? Int,
             tradingDay = details["tradingDay"] as? Int,
             done = json["done"] as? Bool,
